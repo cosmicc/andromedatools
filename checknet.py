@@ -14,8 +14,8 @@ import logging
 import argparse
 
 sys.path.insert(0, '/root/galaxymodules')
-import gentools
-import nettools
+from gentools import * 
+from nettools import * 
 
 __author__ = "Ian Perry"
 __copyright__ = "Copyright 2018, Galaxy Media"
@@ -78,7 +78,7 @@ def main():
     while True:
         try:
             """ perform the ping check and determine results """
-            presults = nettools.ping(check_host)
+            presults = ping(check_host)
             if presults.ret_code == 0:
                 if presults.packet_lost == 0:
                     if float(presults.avg_rtt) < lagthreshold:
