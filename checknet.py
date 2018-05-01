@@ -86,8 +86,8 @@ def main():
                         lagcount = 0
                         downcount = 0
                         if waitingrestore == 1:
-                            elapsed = gentools.elapsedTime(downtime-datetime.now())
-                            didsend = gentools.gentools.pushover(pushover_app_key,'Network Restored','Network connection was {} for {}'.format(dreason,elapsed))
+                            elapsed = elapsedTime(downtime-datetime.now())
+                            didsend = pushover(pushover_app_key,'Network Restored','Network connection was {} for {}'.format(dreason,elapsed))
                             if didsend == True:
                                 waitingrestore = 0
                     elif float(presults.avg_rtt) >= lagthreshold:
@@ -117,17 +117,17 @@ def main():
                 log.warning('High latency thresold reached, sending alert')
             """ process alerts """
             if downalert == 1:
-                didsend = gentools.gentools.pushover(pushover_app_key,'Network Connection Down','The network reported DOWN at {}'.format(downtime))
+                didsend = pushover(pushover_app_key,'Network Connection Down','The network reported DOWN at {}'.format(downtime))
                 if didsend == True:
                     downalert = 0
                     waitingrestore = 1
             elif lossalert == 1:
-                didsend = gentools.gentools.pushover(pushover_app_key,'Packet Loss Detected.','The network reported PACKET LOSS at {}'.format(downtime))
+                didsend = pushover(pushover_app_key,'Packet Loss Detected.','The network reported PACKET LOSS at {}'.format(downtime))
                 if didsend == True:
                     lossalert = 0
                     waitingrestore = 1
             elif lagalert == 1:
-                didsend = gentools.gentools.pushover(pushover_app_key,'High Latency Detected.','The network reported HIGH LATENCY at {}'.format(downtime))
+                didsend = pushover(pushover_app_key,'High Latency Detected.','The network reported HIGH LATENCY at {}'.format(downtime))
                 if didsend == True:
                     lagalert = 0
                     waitingrestore = 1
