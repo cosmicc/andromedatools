@@ -8,6 +8,7 @@
 
 import sys
 import time
+import fcntl
 from datetime import datetime, timedelta
 import logging
 
@@ -34,7 +35,7 @@ def main():
     parser.add_argument('--daemon', action='store_true', help='daemonize')
     parser.add_argument('--host', default='1.1.1.1', help='host to check. default: 1.1.1.1')
     parser.add_argument('--latency', default=200, help='high latency threshold in ms. default: 200')
-    parser.add_argument('--count', default=3, help='number of down counts before alerting. default: 3')
+    parser.add_argument('--count', default=5, help='number of down counts before alerting. default: 5')
     parser.add_argument('--sleep', default=1, help='sleep time between checks in minutes. default: 1')
     parser.add_argument('-f', '--logfile', help='file to log output to. default: log to console (no file logging)')
     args = parser.parse_args()
@@ -54,6 +55,24 @@ def main():
         log_handler = logging.FileHandler(args.logfile)
     log_handler.setFormatter(log_format)
     log.addHandler(log_handler)
+
+    lockfile = '/var/tmp/checknet.lock'
+    if not os.path.isfile(lockfile):
+        os.mknod(lockfile, mode=0o600)
+    lock_handle = open(lockfile, 'w')
+    try:
+        fcntl.lockf(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        log.warning('Process is already running. Can only run once. Exiting')
+        exit(5)
+    except:
+        log.exception('General error trying to lock process to file {}. exiting.'.format(lockfile))
+        exit(1)
+    else:
+        pid = str(os.getpid())
+        log.info('Process has been locked to file {} with PID [{}]'.format(lockfile,pid))
+        lock_handle.write(pid)
+        lock_handle.flush()
 
     daemonize = args.daemon
     check_host = args.host
@@ -86,8 +105,8 @@ def main():
                         lagcount = 0
                         downcount = 0
                         if waitingrestore == 1:
-                            elapsed = elapsedTime(downtime-datetime.now())
-                            didsend = pushover(pushover_app_key,'Network Restored','Network connection was {} for {}'.format(dreason,elapsed))
+                            elapsed = elapsedTime(downtime,datetime.now())
+                            didsend = pushover(pushover_app_key,'Network Restored','Network connection was in {} for {}'.format(dreason,elapsed))
                             if didsend == True:
                                 waitingrestore = 0
                     elif float(presults.avg_rtt) >= lagthreshold:
@@ -117,17 +136,20 @@ def main():
                 log.warning('High latency thresold reached, sending alert')
             """ process alerts """
             if downalert == 1:
-                didsend = pushover(pushover_app_key,'Network Connection Down','The network reported DOWN at {}'.format(downtime))
+                showtime = downtime.strftime('%I:%M %p %m-%d-%y')
+                didsend = pushover(pushover_app_key,'Network Connection Down','The network reported DOWN at {}'.format(showtime))
                 if didsend == True:
                     downalert = 0
                     waitingrestore = 1
             elif lossalert == 1:
-                didsend = pushover(pushover_app_key,'Packet Loss Detected.','The network reported PACKET LOSS at {}'.format(downtime))
+                showtime = downtime.strftime('%I:%M %p %m-%d-%y')
+                didsend = pushover(pushover_app_key,'Packet Loss Detected.','The network reported PACKET LOSS at {}'.format(showtime))
                 if didsend == True:
                     lossalert = 0
                     waitingrestore = 1
             elif lagalert == 1:
-                didsend = pushover(pushover_app_key,'High Latency Detected.','The network reported HIGH LATENCY at {}'.format(downtime))
+                showtime = downtime.strftime('%I:%M %p %m-%d-%y')
+                didsend = pushover(pushover_app_key,'High Latency Detected.','The network reported HIGH LATENCY at {}'.format(showtime))
                 if didsend == True:
                     lagalert = 0
                     waitingrestore = 1
