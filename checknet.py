@@ -6,17 +6,18 @@
     used to watch internet connection status and send pushover notifications
 """
 
+import os
 import sys
 import time
 import fcntl
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 
 import argparse
 
 sys.path.insert(0, '/root/galaxymodules')
-from gentools import * 
-from nettools import * 
+from gentools import *
+from nettools import *
 
 __author__ = "Ian Perry"
 __copyright__ = "Copyright 2018, Galaxy Media"
@@ -26,6 +27,7 @@ __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
 log = logging.getLogger()
+
 
 def main():
     parser = argparse.ArgumentParser(prog='checknet')
@@ -40,9 +42,9 @@ def main():
     parser.add_argument('-f', '--logfile', help='file to log output to. default: log to console (no file logging)')
     args = parser.parse_args()
 
-    if args.debug == True:
+    if args.debug is True:
         log.setLevel(logging.DEBUG)
-    elif args.verbose == True:
+    elif args.verbose is True:
         log.setLevel(logging.INFO)
     else:
         log.setLevel(logging.WARNING)
@@ -70,7 +72,7 @@ def main():
         exit(1)
     else:
         pid = str(os.getpid())
-        log.info('Process has been locked to file {} with PID [{}]'.format(lockfile,pid))
+        log.info('Process has been locked to file {} with PID [{}]'.format(lockfile, pid))
         lock_handle.write(pid)
         lock_handle.flush()
 
@@ -105,19 +107,22 @@ def main():
                         lagcount = 0
                         downcount = 0
                         if waitingrestore == 1:
-                            elapsed = elapsedTime(downtime,datetime.now())
-                            didsend = pushover(pushover_app_key,'Network Restored','Network connection was in {} for {}'.format(dreason,elapsed))
-                            if didsend == True:
+                            elapsed = elapsedTime(downtime, datetime.now())
+                            didsend = pushover(pushover_app_key, 'Network Restored',
+                                               'Network connection was in {} for {}'.format(dreason, elapsed))
+                            if didsend is True:
                                 waitingrestore = 0
                     elif float(presults.avg_rtt) >= lagthreshold:
                         lagcount += 1
-                        log.warning('Lag threshold exceeded {} ms Count {}/{}'.format(presults.avg_rtt,lagcount,downthreshold))
+                        log.warning('Lag threshold exceeded {} ms Count {}/{}'
+                                    .format(presults.avg_rtt, lagcount, downthreshold))
                 elif presults.packet_lost > 0:
                     losscount += 1
-                    log.warning('Packet Loss Detected {} pkts Count {}/{}'.format(presults.packet_lost,losscount,downthreshold))
+                    log.warning('Packet Loss Detected {} pkts Count {}/{}'
+                                .format(presults.packet_lost, losscount, downthreshold))
             else:
                 downcount += 1
-                log.warning('Network Down Detected Count {}/{}'.format(downcount,downthreshold))
+                log.warning('Network Down Detected Count {}/{}'.format(downcount, downthreshold))
             """ process results (figure out if an alert is needed) """
             if downcount == downthreshold:
                 downalert = 1
@@ -137,29 +142,33 @@ def main():
             """ process alerts """
             if downalert == 1:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
-                didsend = pushover(pushover_app_key,'Network Connection Down','The network reported DOWN at {}'.format(showtime))
-                if didsend == True:
+                didsend = pushover(pushover_app_key, 'Network Connection Down',
+                                   'The network reported DOWN at {}'.format(showtime))
+                if didsend is True:
                     downalert = 0
                     waitingrestore = 1
             elif lossalert == 1:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
-                didsend = pushover(pushover_app_key,'Packet Loss Detected.','The network reported PACKET LOSS at {}'.format(showtime))
-                if didsend == True:
+                didsend = pushover(pushover_app_key, 'Packet Loss Detected.',
+                                   'The network reported PACKET LOSS at {}'.format(showtime))
+                if didsend is True:
                     lossalert = 0
                     waitingrestore = 1
             elif lagalert == 1:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
-                didsend = pushover(pushover_app_key,'High Latency Detected.','The network reported HIGH LATENCY at {}'.format(showtime))
-                if didsend == True:
+                didsend = pushover(pushover_app_key, 'High Latency Detected.',
+                                   'The network reported HIGH LATENCY at {}'.format(showtime))
+                if didsend is True:
                     lagalert = 0
                     waitingrestore = 1
         except Exception as e:
             log.exception('Exception occured: %s' % str(e))
-        if daemonize == False:
+        if daemonize is False:
             log.info('Program exiting because was executed without --daemon')
             exit()
         log.info('Waiting {} minutes until next check...'.format(sleeptime))
         time.sleep(sleeptime * 60)
 
+
 if __name__ == '__main__':
-	main()
+    main()

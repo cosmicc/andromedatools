@@ -16,7 +16,6 @@ import argparse
 
 sys.path.insert(0, '/root/galaxymodules')
 import gentools
-import nettools
 
 __author__ = "Ian Perry"
 __copyright__ = "Copyright 2018, Galaxy Media"
@@ -26,6 +25,7 @@ __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
 log = logging.getLogger()
+
 
 def main():
         parser = argparse.ArgumentParser(prog='arkevocheck')
@@ -37,9 +37,9 @@ def main():
         parser.add_argument('-l', '--logfile', help='file to log output to. default: log to console (no file logging)')
         args = parser.parse_args()
 
-        if args.debug == True:
+        if args.debug is True:
             log.setLevel(logging.DEBUG)
-        elif args.verbose == True:
+        elif args.verbose is True:
             log.setLevel(logging.INFO)
         else:
             log.setLevel(logging.WARNING)
@@ -58,7 +58,7 @@ def main():
         global NEWDATFILE
 
         ARKPATH = args.path
-        OLDDATFILE = '{}{}'.format(args.path,args.file)
+        OLDDATFILE = '{}{}'.format(args.path, args.file)
         NEWDATFILE = '{}dynamicconfig.ini'.format(args.path)
         appkey = 'azvph7v697y72ief6un4ggtsvtfny8'
 
@@ -77,17 +77,28 @@ def main():
                 newstats = arkparse(NEWDATFILE)
                 oldstats = arkparse(OLDDATFILE)
                 if newstats['TamingSpeedMultiplier'] > oldstats['TamingSpeedMultiplier']:
-                        log.info('Evolution Event Started. Taming Speed has changed from {}x to {}x'.format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier']))
+                        log.info('Evolution Event Started. Taming Speed has changed from {}x to {}x'
+                                 .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier']))
                         if newstats['BabyMatureSpeedMultiplier'] != oldstats['BabyMatureSpeedMultiplier']:
-                                log.info('Breeding Speed has also changed from {}x to {}x'.format(oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
-                                gentools.pushover(appkey,'Ark {}x Breeding Event Started!!'.format(newstats['BabyMatureSpeedMultiplier']),'Taming has changed from {}x to {}x and Breeding has changed from {}x to {}x'.format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'], oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
+                                log.info('Breeding Speed has also changed from {}x to {}x'
+                                         .format(oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
+                                gentools.pushover(appkey, 'Ark {}x Breeding Event Started!!'
+                                                  .format(newstats['BabyMatureSpeedMultiplier']),
+                                                  'Taming has changed from {}x to {}x and Breeding has changed from {}x to {}x'
+                                                  .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'],
+                                                          oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
                         else:
                                 log.info('Breeding Speed remains at {}x'.format(newstats['BabyMatureSpeedMultiplier']))
-                                gentools.pushover(appkey,'Ark {}x Evolution Event Started!'.format(newstats['TamingSpeedMultiplier']),'Taming has changed from {}x to {}x and breeding stays at {}x'.format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
+                                gentools.pushover(appkey, 'Ark {}x Evolution Event Started!'
+                                                  .format(newstats['TamingSpeedMultiplier']),
+                                                  'Taming has changed from {}x to {}x and breeding stays at {}x'
+                                                  .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'],
+                                                          newstats['BabyMatureSpeedMultiplier']))
                         new2old()
                 elif newstats['TamingSpeedMultiplier'] < oldstats['TamingSpeedMultiplier']:
                         log.info('Evolution Event Ended. Taming has returned to {}x'.format(newstats['TamingSpeedMultiplier']))
-                        gentools.pushover(appkey,'Ark {}x Evolution Event has Ended'.format(oldstats['TamingSpeedMultiplier']),'Taming has returned to {}x'.format(newstats['TamingSpeedMultiplier']))
+                        gentools.pushover(appkey, 'Ark {}x Evolution Event has Ended'.format(oldstats['TamingSpeedMultiplier']),
+                                          'Taming has returned to {}x'.format(newstats['TamingSpeedMultiplier']))
                         new2old()
                 else:
                         log.info('No Change Detected. Taming Speed remains at {}x'.format(newstats['TamingSpeedMultiplier']))
@@ -101,81 +112,84 @@ def main():
 
         log.info('Script Completed Successfully')
 
+
 def arkevoquery():
-	log.info('Sending GET request to http://arkdedicated.com/dynamicconfig.ini')
-	try:
-		evohttp = urllib.request.urlopen('http://arkdedicated.com/dynamicconfig.ini')
-		evostats = evohttp.read()
-		log.info('GET Query to http://arkdedicated.com/dynamicconfig.ini Successful.')
-	except Exception:
-		log.exception('Cannot contact URL http://arkdedicated.com/dynamicconfig.ini')
-		exit()
+    log.info('Sending GET request to http://arkdedicated.com/dynamicconfig.ini')
+    try:
+        evohttp = urllib.request.urlopen('http://arkdedicated.com/dynamicconfig.ini')
+        evostats = evohttp.read()
+        log.info('GET Query to http://arkdedicated.com/dynamicconfig.ini Successful.')
+    except Exception:
+        log.exception('Cannot contact URL http://arkdedicated.com/dynamicconfig.ini')
+        exit()
 
-	if os.path.isfile(NEWDATFILE):
-		try:
-			os.remove(NEWDATFILE)
-			log.debug('Removing lingering file before write {}'.format(NEWDATFILE))
-		except:
-			log.exception('Error removing lingering file before write {}'.format(NEWDATFILE))
-			exit()
+    if os.path.isfile(NEWDATFILE):
+        try:
+            os.remove(NEWDATFILE)
+            log.debug('Removing lingering file before write {}'.format(NEWDATFILE))
+        except:
+            log.exception('Error removing lingering file before write {}'.format(NEWDATFILE))
+            exit()
 
-	try:
-		saveFile = open(NEWDATFILE,'w')
-		saveFile.write(str(evostats))
-		saveFile.close()
-		log.debug('File {} saved successfully'.format(NEWDATFILE))
-	except:
-		log.exception('Error saving file {}'.format(NEWDATFILE))
-		exit()
+    try:
+        saveFile = open(NEWDATFILE, 'w')
+        saveFile.write(str(evostats))
+        saveFile.close()
+        log.debug('File {} saved successfully'.format(NEWDATFILE))
+    except:
+        log.exception('Error saving file {}'.format(NEWDATFILE))
+        exit()
 
 
 def arkparse(wfile):
-	log.debug('Starting file Parser on {}'.format(wfile))
-	if not os.path.isfile(wfile):
-		log.exception('Cannot Parse File. File does not exist {}'.format(wfile))
-		exit()
-	try:
-		arkfile = open(wfile,'r').read()
-		arkfile = arkfile.rstrip()
+    log.debug('Starting file Parser on {}'.format(wfile))
+    if not os.path.isfile(wfile):
+        log.exception('Cannot Parse File. File does not exist {}'.format(wfile))
+        exit()
+    try:
+        arkfile = open(wfile, 'r').read()
+        arkfile = arkfile.rstrip()
 
-	except:
-		log.exception('Error reading {}'.format(wfile))
-		exit()
-	arkstats = arkfile.split('\\r\\n')
-	arkstats[0] = arkstats[0][:0] + arkstats[0][2:]  # Sanitize output
-	arkstats[5] = arkstats[5].rstrip("'")		 # Sanitize Output
-	arkdict = {k:v for k,v in (x.split('=') for x in arkstats)}
-	log.debug('Stats from {} data found: {}'.format(wfile, arkdict))
-	for i in arkdict:
-		arkdict[i] = procmultip(arkdict[i])
-	return(arkdict)
+    except:
+        log.exception('Error reading {}'.format(wfile))
+        exit()
+    arkstats = arkfile.split('\\r\\n')
+    arkstats[0] = arkstats[0][:0] + arkstats[0][2:]  # Sanitize output
+    arkstats[5] = arkstats[5].rstrip("'")         # Sanitize Output
+    arkdict = {k: v for k, v in (x.split('=') for x in arkstats)}
+    log.debug('Stats from {} data found: {}'.format(wfile, arkdict))
+    for i in arkdict:
+        arkdict[i] = procmultip(arkdict[i])
+    return(arkdict)
+
 
 def procmultip(multiple):
-	if multiple.endswith('0'):
-		multip = multiple.rstrip('.0')
-		multip = int(multip)
-	else:
-		multip = float(multiple)
-	return(multip)
+    if multiple.endswith('0'):
+        multip = multiple.rstrip('.0')
+        multip = int(multip)
+    else:
+        multip = float(multiple)
+    return(multip)
 
 
 def new2old():
-	if os.path.isfile(OLDDATFILE):
-		os.remove(OLDDATFILE)
-		log.debug('Removing file {}'.format(OLDDATFILE))
-	try:
-		copyfile(NEWDATFILE,OLDDATFILE)
-		log.debug('Copying {} to {}'.format(NEWDATFILE,OLDDATFILE))
-	except:
-		log.exception('Error while copying file {} to {}'.format(NEWDATFILE,OLDDATFILE))
-		os.remove(NEWDATFILE)
-		exit()
-	try:
-		os.remove(NEWDATFILE)
-		log.debug('Deleted File {}'.format(NEWDATFILE))
-	except:
-		log.critical('Error Deleting File {}'.format(NEWDATFILE))
-		exit()
+    if os.path.isfile(OLDDATFILE):
+        os.remove(OLDDATFILE)
+        log.debug('Removing file {}'.format(OLDDATFILE))
+    try:
+        copyfile(NEWDATFILE, OLDDATFILE)
+        log.debug('Copying {} to {}'.format(NEWDATFILE, OLDDATFILE))
+    except:
+        log.exception('Error while copying file {} to {}'.format(NEWDATFILE, OLDDATFILE))
+        os.remove(NEWDATFILE)
+        exit()
+    try:
+        os.remove(NEWDATFILE)
+        log.debug('Deleted File {}'.format(NEWDATFILE))
+    except:
+        log.critical('Error Deleting File {}'.format(NEWDATFILE))
+        exit()
+
 
 if __name__ == '__main__':
-	main()
+    main()

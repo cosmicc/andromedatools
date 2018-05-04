@@ -25,6 +25,7 @@ log = logging.getLogger('watchdog')
 
 lockfile = '/var/tmp/checknet.lock'
 
+
 def main():
     log.setLevel(logging.DEBUG)
     log_format = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
@@ -38,16 +39,18 @@ def main():
         lock_handle = open(lockfile, 'r')
         filepid = lock_handle.read()
         if proctools.ispid_running(int(filepid)):
-            exit(0) 
+            exit(0)
         else:
             log.warning('checknet script is not running.  restarting script')
             try:
-                subprocess.Popen(['/root/andromedatools/checknet.py','--daemon','-f','/root/connection.log'],shell=False)
+                subprocess.Popen(['/root/andromedatools/checknet.py', '--daemon',
+                                  '-f', '/root/connection.log'], shell=False)
             except:
                 log.error('Error trying to execute checknet script')
-                exit(1)  
+                exit(1)
             else:
-                exit(0) 
+                exit(0)
+
 
 if __name__ == '__main__':
-	main()
+    main()
