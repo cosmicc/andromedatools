@@ -27,7 +27,9 @@ __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
 log = logging.getLogger()
-
+configfile = '/etc/galaxymediatools.cfg'
+config = ConfigParser()
+config.read(configfile)
 
 def main():
     parser = argparse.ArgumentParser(prog='checknet')
@@ -78,7 +80,7 @@ def main():
 
     daemonize = args.daemon
     check_host = args.host
-    pushover_app_key = 'a2DmJYt1AgDxLWX6JQSDDPmAvbrtnY'
+    pushover_app_key = config.get('pushover', 'connection_key')
     lagthreshold = args.latency
     downthreshold = args.count
     sleeptime = args.sleep

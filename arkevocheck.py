@@ -10,6 +10,7 @@ import sys
 import os
 import logging
 from shutil import copyfile
+from configparser import ConfigParser
 
 import urllib.request
 import argparse
@@ -24,6 +25,9 @@ __version__ = "1.0.1"
 __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
+configfile = '/etc/galaxymediatools.cfg'
+config = ConfigParser()
+config.read(configfile)
 log = logging.getLogger()
 
 
@@ -60,7 +64,7 @@ def main():
         ARKPATH = args.path
         OLDDATFILE = '{}{}'.format(args.path, args.file)
         NEWDATFILE = '{}dynamicconfig.ini'.format(args.path)
-        appkey = 'azvph7v697y72ief6un4ggtsvtfny8'
+        appkey = config.get('pushover', 'ark_key')
 
         log.info('Starting Ark Evolution Event Checker')
 
