@@ -168,6 +168,7 @@ def arkparse(wfile):
 
 
 def procmultip(multiple):
+    multiple = multiple.rstrip("'")
     if multiple.endswith('0'):
         multip = multiple.rstrip('.0')
         multip = int(multip)
