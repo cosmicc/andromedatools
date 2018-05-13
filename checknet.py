@@ -111,7 +111,7 @@ def main():
                         if waitingrestore == 1:
                             elapsed = elapsedTime(downtime, datetime.now())
                             didsend = pushover(pushover_app_key, 'Network Restored',
-                                               'Network connection was in {} for {}'.format(dreason, elapsed))
+                                               'Network connection was {} for {}'.format(dreason, elapsed))
                             if didsend is True:
                                 waitingrestore = 0
                     elif float(presults.avg_rtt) >= lagthreshold:
