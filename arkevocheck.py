@@ -80,32 +80,18 @@ def main():
                 arkevoquery()
                 newstats = arkparse(NEWDATFILE)
                 oldstats = arkparse(OLDDATFILE)
-                if newstats['TamingSpeedMultiplier'] > oldstats['TamingSpeedMultiplier']:
-                        log.info('Evolution Event Started. Taming Speed has changed from {}x to {}x'
-                                 .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier']))
-                        if newstats['BabyMatureSpeedMultiplier'] != oldstats['BabyMatureSpeedMultiplier']:
-                                log.info('Breeding Speed has also changed from {}x to {}x'
-                                         .format(oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
-                                gentools.pushover(appkey, 'Ark {}x Breeding Event Started!!'
-                                                  .format(newstats['BabyMatureSpeedMultiplier']),
-                                                  'Taming has changed from {}x to {}x and Breeding has changed from {}x to {}x'
-                                                  .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'],
-                                                          oldstats['BabyMatureSpeedMultiplier'], newstats['BabyMatureSpeedMultiplier']))
-                        else:
-                                log.info('Breeding Speed remains at {}x'.format(newstats['BabyMatureSpeedMultiplier']))
-                                gentools.pushover(appkey, 'Ark {}x Evolution Event Started!'
-                                                  .format(newstats['TamingSpeedMultiplier']),
-                                                  'Taming has changed from {}x to {}x and breeding stays at {}x'
-                                                  .format(oldstats['TamingSpeedMultiplier'], newstats['TamingSpeedMultiplier'],
-                                                          newstats['BabyMatureSpeedMultiplier']))
+                if newstats['TamingSpeedMultiplier'] > oldstats['TamingSpeedMultiplier'] or newstats['BabyMatureSpeedMultiplier'] > oldstats['BabyMatureSpeedMultiplier'] or \
+                            newstats['HarvestAmountMultiplier'] > oldstats['HarvestAmountMultiplier'] or newstats['XPMultiplier'] > oldstats['XPMultiplier']:
+                        log.info(f'Evolution Event Started. {newstats["TamingSpeedMultiplier"]}x Taming {newstats["BabyMatureSpeedMultiplier"]}x Breeding {newstats["HarvestAmountMultiplier"]}x Harvesting {newstats["XPMultiplier"]}x XP {newstats["CustomRecipeEffectivenessMultiplier"]}x Recipes')
+                        gentools.pushover(appkey, 'Ark Evolution Event Started!', f'{newstats["TamingSpeedMultiplier"]}x Taming Speed\n{newstats["BabyMatureSpeedMultiplier"]}x Breeding Speed\n \
+                                          {newstats["HarvestAmountMultiplier"]}x Harvest Speed\n{newstats["HarvestAmountMultiplier"]}x XP Speed\n{newstats["CustomRecipeEffectivenessMultiplier"]}x Recipe Speed')
                         new2old()
                 elif newstats['TamingSpeedMultiplier'] < oldstats['TamingSpeedMultiplier']:
-                        log.info('Evolution Event Ended. Taming has returned to {}x'.format(newstats['TamingSpeedMultiplier']))
-                        gentools.pushover(appkey, 'Ark {}x Evolution Event has Ended'.format(oldstats['TamingSpeedMultiplier']),
-                                          'Taming has returned to {}x'.format(newstats['TamingSpeedMultiplier']))
+                        log.info('Evolution Event Ended.')
+                        gentools.pushover(appkey, 'Ark Evolution Event has Ended', f'Multipliers have returned to {newstats["TamingSpeedMultiplier"]}x')
                         new2old()
                 else:
-                        log.info('No Change Detected. Taming Speed remains at {}x'.format(newstats['TamingSpeedMultiplier']))
+                        log.info(f'No Change Detected. Multipliers remain at {newstats["TamingSpeedMultiplier"]}x')
         if os.path.isfile(NEWDATFILE):
                 try:
                         os.remove(NEWDATFILE)
