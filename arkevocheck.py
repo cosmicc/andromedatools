@@ -83,8 +83,7 @@ def main():
                 if newstats['TamingSpeedMultiplier'] > oldstats['TamingSpeedMultiplier'] or newstats['BabyMatureSpeedMultiplier'] > oldstats['BabyMatureSpeedMultiplier'] or \
                             newstats['HarvestAmountMultiplier'] > oldstats['HarvestAmountMultiplier'] or newstats['XPMultiplier'] > oldstats['XPMultiplier']:
                         log.info(f'Evolution Event Started. {newstats["TamingSpeedMultiplier"]}x Taming {newstats["BabyMatureSpeedMultiplier"]}x Breeding {newstats["HarvestAmountMultiplier"]}x Harvesting {newstats["XPMultiplier"]}x XP {newstats["CustomRecipeEffectivenessMultiplier"]}x Recipes')
-                        gentools.pushover(appkey, 'Ark Evolution Event Started!', f'{newstats["TamingSpeedMultiplier"]}x Taming Speed\n{newstats["BabyMatureSpeedMultiplier"]}x Breeding Speed\n \
-                                          {newstats["HarvestAmountMultiplier"]}x Harvest Speed\n{newstats["HarvestAmountMultiplier"]}x XP Speed\n{newstats["CustomRecipeEffectivenessMultiplier"]}x Recipe Speed')
+                        gentools.pushover(appkey, 'Ark Evolution Event Started!', f'{newstats["TamingSpeedMultiplier"]}x Taming\n{newstats["BabyMatureSpeedMultiplier"]}x Breeding\n{newstats["HarvestAmountMultiplier"]}x Harvesting\n{newstats["HarvestAmountMultiplier"]}x Experience\n{newstats["CustomRecipeEffectivenessMultiplier"]}x Recipes')
                         new2old()
                 elif newstats['TamingSpeedMultiplier'] < oldstats['TamingSpeedMultiplier']:
                         log.info('Evolution Event Ended.')
