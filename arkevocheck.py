@@ -85,12 +85,13 @@ def main():
                         log.info(f'Evolution Event Started. {newstats["TamingSpeedMultiplier"]}x Taming {newstats["BabyMatureSpeedMultiplier"]}x Breeding {newstats["HarvestAmountMultiplier"]}x Harvesting {newstats["XPMultiplier"]}x XP {newstats["CustomRecipeEffectivenessMultiplier"]}x Recipes')
                         gentools.pushover(appkey, 'Ark Evolution Event Started!', f'{newstats["TamingSpeedMultiplier"]}x Taming\n{newstats["BabyMatureSpeedMultiplier"]}x Breeding\n{newstats["HarvestAmountMultiplier"]}x Harvesting\n{newstats["HarvestAmountMultiplier"]}x Experience\n{newstats["CustomRecipeEffectivenessMultiplier"]}x Recipes')
                         new2old()
-                elif newstats['TamingSpeedMultiplier'] < oldstats['TamingSpeedMultiplier']:
+                elif newstats['TamingSpeedMultiplier'] < oldstats['TamingSpeedMultiplier'] or newstats['BabyMatureSpeedMultiplier'] < oldstats['BabyMatureSpeedMultiplier'] or \
+                newstats['HarvestAmountMultiplier'] < oldstats['HarvestAmountMultiplier'] or newstats['XPMultiplier'] < oldstats['XPMultiplier']:
                         log.info('Evolution Event Ended.')
                         gentools.pushover(appkey, 'Ark Evolution Event has Ended', f'Multipliers have returned to {newstats["TamingSpeedMultiplier"]}x')
                         new2old()
                 else:
-                        log.info(f'No Change Detected. Multipliers remain at {newstats["TamingSpeedMultiplier"]}x')
+                        log.info('No Change Detected. Multipliers remain')
         if os.path.isfile(NEWDATFILE):
                 try:
                         os.remove(NEWDATFILE)
