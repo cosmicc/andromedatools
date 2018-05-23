@@ -113,6 +113,12 @@ def main():
                             didsend = pushover(pushover_app_key, 'Network Restored',
                                                'Network connection was {} for {}'.format(dreason, elapsed))
                             if didsend is True:
+                                losscount = 0
+                                lagcount = 0
+                                downcount = 0
+                                downalert = 0
+                                lossalert = 0
+                                lagalert = 0
                                 waitingrestore = 0
                     elif float(presults.avg_rtt) >= lagthreshold:
                         lagcount += 1
@@ -147,21 +153,18 @@ def main():
                 didsend = pushover(pushover_app_key, 'Network Connection Down',
                                    'The network reported DOWN at {}'.format(showtime))
                 if didsend is True:
-                    downalert = 0
                     waitingrestore = 1
             elif lossalert == 1:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
                 didsend = pushover(pushover_app_key, 'Packet Loss Detected.',
                                    'The network reported PACKET LOSS at {}'.format(showtime))
                 if didsend is True:
-                    lossalert = 0
                     waitingrestore = 1
             elif lagalert == 1:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
                 didsend = pushover(pushover_app_key, 'High Latency Detected.',
                                    'The network reported HIGH LATENCY at {}'.format(showtime))
                 if didsend is True:
-                    lagalert = 0
                     waitingrestore = 1
         except Exception as e:
             log.exception('Exception occured: %s' % str(e))
