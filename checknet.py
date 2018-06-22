@@ -148,19 +148,19 @@ def main():
                 dreason = "in High Latency"
                 log.warning('High latency thresold reached, sending alert')
             """ process alerts """
-            if downalert == 1:
+            if downalert == 1 and waitingrestore == 0:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
                 didsend = pushover(pushover_app_key, 'Network Connection Down',
                                    'The network reported DOWN at {}'.format(showtime))
                 if didsend is True:
                     waitingrestore = 1
-            elif lossalert == 1:
+            elif lossalert == 1 and waitingrestore == 0:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
                 didsend = pushover(pushover_app_key, 'Packet Loss Detected.',
                                    'The network reported PACKET LOSS at {}'.format(showtime))
                 if didsend is True:
                     waitingrestore = 1
-            elif lagalert == 1:
+            elif lagalert == 1 and waitingrestore == 0:
                 showtime = downtime.strftime('%I:%M %p %m-%d-%y')
                 didsend = pushover(pushover_app_key, 'High Latency Detected.',
                                    'The network reported HIGH LATENCY at {}'.format(showtime))
