@@ -38,8 +38,20 @@ def main():
     if os.path.isfile(lockfile):
         lock_handle = open(lockfile, 'r')
         filepid = lock_handle.read()
-        if proctools.ispid_running(int(filepid)):
-            exit(0)
+        if filepid != None: 
+            if True: #proctools.ispid_running(int(filepid)):
+                exit(0)
+           
+            else:
+                log.warning('checknet script is not running.  restarting script')
+                try:
+                    subprocess.Popen(['/root/andromedatools/checknet.py', '--daemon',
+                                  '-f', '/root/connection.log'], shell=False)
+                except:
+                    log.error('Error trying to execute checknet script')
+                    exit(1)
+                else:
+                    exit(0)
         else:
             log.warning('checknet script is not running.  restarting script')
             try:

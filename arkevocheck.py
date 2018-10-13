@@ -143,7 +143,8 @@ def arkparse(wfile):
     except:
         log.exception('Error reading {}'.format(wfile))
         exit()
-    arkstats = arkfile.split('\\r\\n')
+    arkstats = arkfile.split('\\n')
+    print(arkstats)
     arkstats[0] = arkstats[0][:0] + arkstats[0][2:]  # Sanitize output
     arkstats[5] = arkstats[5].rstrip("'")         # Sanitize Output
     arkdict = {k: v for k, v in (x.split('=') for x in arkstats)}
